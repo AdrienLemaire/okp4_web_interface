@@ -2,8 +2,9 @@ import "./App.css";
 
 import { configureGraz, useAccount, useActiveChain, useConnect, useDisconnect } from "graz";
 
-import reactLogo from "./assets/react.svg";
+import logo from "./assets/okp4-logo.png";
 import {customChains} from "./customChains";
+import Account from "./Account";
 
 configureGraz({
   defaultChain: customChains.nemeton,
@@ -23,10 +24,8 @@ export default function App() {
   return (
     <div className="App">
       <div>
-        <img src="/vite.svg" className="logo" alt="Vite logo" />
-        <img src={reactLogo} className="logo react" alt="React logo" />
+        <img src={logo} className="logo okp4" alt="OKP4 logo" />
       </div>
-      <h1>Vite + React + Graz</h1>
       <div className="card">
         {isDisconnected && <p>Connect wallet using the button below.</p>}
         {activeChain && (
@@ -34,11 +33,7 @@ export default function App() {
             Current chain: <code>{activeChain.chainId}</code>
           </p>
         )}
-        {account && (
-          <p>
-            Wallet address: <code>{account.bech32Address}</code>
-          </p>
-        )}
+          {account && <Account address={account.bech32Address} />}
         <br />
         <button disabled={isConnecting || isReconnecting} onClick={handleButton}>
           {(isConnecting || isReconnecting) && "Connecting..."}
