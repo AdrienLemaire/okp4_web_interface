@@ -1,11 +1,12 @@
 import "./App.css";
 
-import { configureGraz, mainnetChains, useAccount, useActiveChain, useConnect, useDisconnect } from "graz";
+import { configureGraz, useAccount, useActiveChain, useConnect, useDisconnect } from "graz";
 
 import reactLogo from "./assets/react.svg";
+import {customChains} from "./customChains";
 
 configureGraz({
-  defaultChain: mainnetChains.juno,
+  defaultChain: customChains.nemeton,
 });
 
 export default function App() {
