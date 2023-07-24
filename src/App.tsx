@@ -5,6 +5,7 @@ import { configureGraz, useAccount, useActiveChain, useConnect, useDisconnect } 
 import okp4Logo from "./assets/okp4-logo.png";
 import {customChains} from "./customChains";
 import Account from "./Account";
+import Rules from "./Rules";
 
 configureGraz({
   defaultChain: customChains.nemeton,
@@ -42,6 +43,7 @@ export default function App() {
           {isDisconnected && "Connect Wallet"}
         </button>
       </div>
+      {account && <Rules address={account.bech32Address} />}
     </div>
   );
 }
