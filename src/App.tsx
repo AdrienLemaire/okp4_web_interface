@@ -6,6 +6,7 @@ import okp4Logo from "./assets/okp4-logo.png";
 import {customChains} from "./customChains";
 import Account from "./Account";
 import Rules from "./Rules";
+import {QueryLawStone} from "./QueryLawStone";
 
 configureGraz({
   defaultChain: customChains.nemeton,
@@ -44,6 +45,7 @@ export default function App() {
         </button>
       </div>
       {account && <Rules address={account.bech32Address} />}
+      <QueryLawStone />
     </div>
   );
 }
