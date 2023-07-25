@@ -1,66 +1,52 @@
-import {toBase64} from "@cosmjs/encoding";
-import {IndexedTx} from "@cosmjs/stargate/build/stargateclient";
+/**
+ * Notes:
+ *
+ * - alternate way to fetch the contracts: stargate.searchTx (broken as of 2023/07/25)
+ *          const response = await stargate.searchTx({
+ *            tags: [{ key: "instantiate.code_id", value: "5" }],
+ *          });
+ * - alternative way to filter the contracts: use cosmWasm.getContractsByCreator.
+ */
+
 import {useClients} from "graz";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useCallback} from "react";
+import RuleDetails from "./RuleDetails";
 
-const textEncoder = new TextEncoder();
-
-// class Rules
 export default function Rules({address}: {address: string}) {
   const { data, isLoading } = useClients();
-  const { stargate, cosmWasm, tendermint } = data || {};
-  const [result, setResult] = useState<readonly IndexedTx[] | null>(null);
+  const { cosmWasm } = data || {};
+  const [result, setResult] = useState<readonly string[] | null>(null);
+  // useState to store the filter value
+  const [filter, setFilter] = useState<string>(address);
 
-  console.log('address', address);
   useEffect(() => {
-    if (stargate) {
+    if (cosmWasm) {
       const fetchData = async () => {
-        try {
-          const response = await stargate.searchTx({
-            tags: [{ key: "instantiate.code_id", value: "5" }],
-            //tags: [{ key: "aW5zdGFudGlhdGUuY29kZV9pZA==", value: "NQ==" }],
-            //tags: [{ key: "message.sender", value: "okp41cu9wzlcyyxpek20jaqfwzu3llzjgx34cwnv2v5" }],
-            //sentFromOrTo: address,
-            //height: 1048576,
-          });
-          //const response2 = await cosmWasm?.searchTx({
-            //tags: [{ key: "instantiate.code_id", value: "5" }],
-          //});
-          //const response = await tendermint?.txSearchAll({
-            //query: `message.sender='${address}'`,
-          //});
+        const response = await cosmWasm.getContracts(5);
         setResult(response);
-        }
-        catch (error) {
-          console.log(error);
-        }
-
       };
       fetchData();
     }
-  }, [isLoading, stargate]);
+  }, [isLoading, cosmWasm]);
 
-
-  console.log('data', data);
-  if (result) {
-    console.log('results:', result);
-  }
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.target.value);
+  }, []);
 
 
   return  (
     <div>
-      Rules:
        {isLoading ? (
         "Fetching rules..."
       ) : (
-        <ul>
-        "data"
-       {/*   {data?.map((rule) => (
-            <li key={rule.id}>
-              {rule.name}
-            </li>
-          ))}*/}
-        </ul>
+        <div>
+          <label htmlFor="filter">Filter by creator address</label>
+          <input type="text" placeholder="Filter by creator address" value={filter} onChange={handleChange} />
+
+          {result?.map((contract, idx) => (
+            <RuleDetails address={contract} filter={filter} key={idx} />
+          ))}
+        </div>
         )} 
     </div>
   );

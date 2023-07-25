@@ -9,10 +9,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm": "^0.25.6",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/tendermint-rpc": "^0.31.0",
+    "axios": "^1.4.0",
     "graz": "*",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "react-axios": "^2.0.6",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
