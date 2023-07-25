@@ -1,5 +1,6 @@
-import {useClients, useQuerySmart} from "graz";
-import {useEffect, useState} from "react";
+import {useQuerySmart} from "graz";
+import {useState} from "react";
+import {EXAMPLE_LAWSTONE_ADDR, EXAMPLE_LAWSTONE_QUERY} from "./constants";
 
 type Tdata = {
   answer: {
@@ -22,8 +23,8 @@ type Tdata = {
 
 export const QueryLawStone = () => {
   // form to get a law stone address and a query to perform
-  const [address, setAddress] = useState<string>("");
-  const [query, setQuery] = useState<string>("");
+  const [address, setAddress] = useState<string>(EXAMPLE_LAWSTONE_ADDR);
+  const [query, setQuery] = useState<string>(EXAMPLE_LAWSTONE_QUERY);
   const { data, isSuccess } = useQuerySmart<Tdata, string>(address, { ask: { query }});
 
   return (
