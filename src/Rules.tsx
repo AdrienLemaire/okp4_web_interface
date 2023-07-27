@@ -5,7 +5,7 @@
  *          const response = await stargate.searchTx({
  *            tags: [{ key: "instantiate.code_id", value: "5" }],
  *          });
- * - alternative way to filter the contracts: use cosmWasm.getContractsByCreator.
+ * - alternative way to filter the contracts: use cosmWasm.getContractsByCreator (but needs to filter by code_id)
  */
 
 import {useClients} from "graz";
@@ -16,7 +16,6 @@ export default function Rules({address}: {address: string}) {
   const { data, isLoading } = useClients();
   const { cosmWasm } = data || {};
   const [result, setResult] = useState<readonly string[] | null>(null);
-  // useState to store the filter value
   const [filter, setFilter] = useState<string>(address);
 
   useEffect(() => {
@@ -33,21 +32,21 @@ export default function Rules({address}: {address: string}) {
     setFilter(e.target.value);
   }, []);
 
+  if (isLoading) return <div>Loading Rules...</div>;
 
   return  (
     <div>
-       {isLoading ? (
-        "Fetching rules..."
-      ) : (
-        <div>
-          <label htmlFor="filter">Filter by creator address</label>
-          <input type="text" placeholder="Filter by creator address" value={filter} onChange={handleChange} />
+      <h2>Rules</h2>
+      <div>
+        <label htmlFor="filter">Filter by creator address</label>
+        <input id="filter" type="text" value={filter} onChange={handleChange} />
+      </div>
 
-          {result?.map((contract, idx) => (
-            <RuleDetails address={contract} filter={filter} key={idx} />
-          ))}
-        </div>
-        )} 
+      <div>
+        {result?.map((address, idx) => (
+          <RuleDetails address={address} filter={filter} key={idx} />
+        ))}
+      </div>
     </div>
   );
 }
