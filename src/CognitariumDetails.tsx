@@ -84,7 +84,7 @@ export default function CognitariumDetails({ address, filter }: TCognitariumDeta
 
         <div>
           {!showInsert && <button onClick={() => setShowInsert(true)}>Insert RDF triples</button>}
-          {showInsert && <RDFTripleInsert address={address} closeForm={() => setShowInsert(false)} />}
+          {showInsert && <RDFTripleInsert contractAddress={address} closeForm={() => setShowInsert(false)} />}
         </div>
 
         <div>Data triples</div>
