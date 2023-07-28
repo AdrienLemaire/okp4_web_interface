@@ -1,8 +1,8 @@
-import {configureGraz, useAccount} from 'graz';
+import {configureGraz, useAccount, useOfflineSigners} from 'graz';
 import React, { useState } from 'react';
 import {customChains} from "./customChains";
-import {LawStoneCreate} from './LawStoneCreate';
-import {Ontology} from './Ontology';
+import LawStoneCreate from './LawStoneCreate';
+import Ontology from './Ontology';
 import {QueryLawStone} from './QueryLawStone';
 import Rules from './Rules';
 import Setup from './Setup';
@@ -15,6 +15,7 @@ configureGraz({
 function App() {
   const [activeTab, setActiveTab] = useState('setup');
   const { data: account } = useAccount();
+  const { signer } = useOfflineSigners();
 
   return (
     <div>
@@ -59,8 +60,8 @@ function App() {
       {activeTab === 'law_stone' && (
         <QueryLawStone />
       )}
-      {activeTab === 'create_law_stone' && (
-        <LawStoneCreate />
+      {activeTab === 'create_law_stone' && !!signer && (
+        <LawStoneCreate signer={signer} />
       )}
     </div>
   );

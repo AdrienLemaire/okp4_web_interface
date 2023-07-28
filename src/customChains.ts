@@ -3,6 +3,10 @@ import { defineChains } from "graz";
 export const customChains = defineChains({
   nemeton: {
     chainId: "okp4-nemeton-1",
+    gas: {
+      price: "10000000",
+      denom: "uknow",
+    },
     currencies: [
       {
         coinDenom: "know",

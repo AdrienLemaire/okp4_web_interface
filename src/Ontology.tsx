@@ -8,7 +8,7 @@ import {useClients} from "graz";
 import {useState, useEffect, useCallback} from "react";
 import CognitariumDetails from "./CognitariumDetails";
 
-export function Ontology({ address }: { address: string }) {
+export default function Ontology({ address }: { address: string }) {
   const { data, isLoading } = useClients();
   const { cosmWasm } = data || {};
   const [result, setResult] = useState<readonly string[] | null>(null);
