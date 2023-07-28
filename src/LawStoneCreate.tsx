@@ -3,22 +3,19 @@ import { OfflineSigner } from "@cosmjs/proto-signing";
 import { Decimal } from "@cosmjs/math";
 import { GasPrice } from "@cosmjs/stargate";
 import { OKP4_ADDRESS, STORAGE_ADDRESS, TRANSACTION_MEMO } from "./constants";
-import { Dispatch, MouseEventHandler, SetStateAction } from "react";
+import { Dispatch, memo, MouseEventHandler, SetStateAction, useCallback, useEffect, useState } from "react";
+import { Forms, Modal } from "axentix";
 
-export default function LawStoneCreate({
-  signer,
-  closeForm,
-}: {
-  signer: OfflineSigner;
-  closeForm: MouseEventHandler<HTMLButtonElement>;
-}) {
+const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
+  const [modal, setModal] = useState<Modal>();
+
   const { instantiateContract } = useInstantiateContract({
     codeId: 5,
     onError: () => {},
-    onSuccess: ({ contractAddress }) => console.log("Address: ", contractAddress),
+    onSuccess: ({ contractAddress }: { contractAddress: string }) => console.log("Address: ", contractAddress),
   });
 
-  const handleClick = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const label = (event.currentTarget.elements.namedItem("label") as HTMLInputElement).value;
     const program = (event.currentTarget.elements.namedItem("program") as HTMLTextAreaElement).value;
@@ -28,26 +25,74 @@ export default function LawStoneCreate({
     };
     const options = { memo: TRANSACTION_MEMO, admin: OKP4_ADDRESS };
     instantiateContract({ msg, options, label });
-  };
+  }, []);
+
+  const handleChange = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    Forms.updateInputs();
+  }, []);
+
+  useEffect(() => {
+    const modal = new Modal("#create-law-stone", {
+      overlay: true,
+      animationDuration: 500,
+    });
+    setModal(modal);
+    modal.el.addEventListener("ax.modal.close", () => setOpen(false));
+
+
+    return () => {
+      modal.destroy();
+    };
+  }, []);
+
+  const [open, setOpen] = useState<boolean>(false);
+  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    if (!open) modal?.open();
+    else modal?.close();
+  }, [open]);
 
   return (
-    <div>
-      <button onClick={closeForm}>Close</button>
-      <div>
-        <p>Warning: This is not working</p>
-      </div>
+    <>
+      <button
+        className="btn shadow-1 rounded-1 primary float-right mr-4"
+        data-target="create-law-stone"
+        onClick={handleClick}
+      >
+        Create Law Stone
+      </button>
 
-      <h3>Create Contract</h3>
-      <form onSubmit={handleClick}>
-        <label htmlFor="program">program</label>
-        <textarea id="program" />
-        <label htmlFor="label">label</label>
-        <input id="label" type="text" />
-        <button type="submit">Create Contract</button>
-      </form>
-    </div>
+      <div className="modal shadow-1 white rounded-3 modal-bouncing" style={{ zIndex: 100 }} id="create-law-stone">
+        <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
+          <span className="iconify-inline" data-icon="mdi:alert-octagon"></span> Not working yet
+        </div>
+
+        <div className="modal-header">Create Contract</div>
+
+        <div className="modal-content">
+          <form className="form-material" onSubmit={handleSubmit} onChange={handleChange}>
+            <div className="form-field">
+              <label htmlFor="label">label</label>
+              <input id="label" type="text" className="form-control" />
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="program">program</label>
+              <textarea id="program" className="form-control" />
+            </div>
+
+            <button className="btn rounded-1 primary btn-press" type="submit">
+              Create Contract
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
   );
-}
+};
+
+export default memo(LawStoneCreate);
 
 //export default function LawStoneCreate({ signer }: { signer: OfflineSigner }) {
 //  const signingClientsArgs = {

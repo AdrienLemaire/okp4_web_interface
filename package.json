@@ -12,6 +12,7 @@
     "@cosmjs/cosmwasm": "^0.25.6",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/tendermint-rpc": "^0.31.0",
+    "axentix": "^2.4.0",
     "axios": "^1.4.0",
     "graz": "*",
     "prop-types": "^15.8.1",

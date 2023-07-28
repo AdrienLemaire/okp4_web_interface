@@ -47,7 +47,7 @@ export default function RDFTripleInsert({
 
   return (
     <div>
-      <button onClick={closeForm}>Close</button>
+      <button className="" onClick={closeForm}>Close</button>
       <div>
         <p>Warning: This is not working</p>
       </div>

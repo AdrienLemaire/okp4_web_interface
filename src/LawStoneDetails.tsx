@@ -52,8 +52,8 @@ export default function LawStoneDetails({address, filter}: TLawStoneDetails) {
   }
 
   return  (
-    <div>
-      <h3>Law Stone {address}</h3>
+    <div className="w100">
+      <h6>{address}</h6>
       {!contract ? (
         "Fetching details..."
       ) : (
@@ -66,7 +66,7 @@ export default function LawStoneDetails({address, filter}: TLawStoneDetails) {
         {showQuery && <LawStoneQuery address={address} closeForm={() => setShowQuery(false)} />}
 
           <div>decoded prolog program:</div>
- <pre>{decoded}</pre>
+ <pre className="wb-break-word overflow-x-scroll" style={{width: "50em"}}>{decoded}</pre>
         </div>
       )}
     </div>

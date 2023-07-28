@@ -8,18 +8,17 @@
  * - alternative way to filter the contracts: use cosmWasm.getContractsByCreator (but needs to filter by code_id)
  */
 
-import {useClients, useOfflineSigners} from "graz";
-import {useState, useEffect, useCallback} from "react";
+import { useClients, useOfflineSigners } from "graz";
+import { useState, useEffect, useCallback } from "react";
 import LawStoneDetails from "./LawStoneDetails";
-import LawStoneCreate from './LawStoneCreate';
+import LawStoneCreate from "./LawStoneCreate";
 
-export default function LawStones({address}: {address: string}) {
+export default function LawStones({ address }: { address: string }) {
   const { signer } = useOfflineSigners();
   const { data, isLoading } = useClients();
   const { cosmWasm } = data || {};
   const [result, setResult] = useState<readonly string[] | null>(null);
   const [filter, setFilter] = useState<string>(address);
-  const [showCreate, setShowCreate] = useState<boolean>(false);
 
   useEffect(() => {
     if (cosmWasm) {
@@ -37,19 +36,17 @@ export default function LawStones({address}: {address: string}) {
 
   if (isLoading) return <div>Loading LawStones...</div>;
 
-  return  (
+  return (
     <div>
-      <h2>LawStones</h2>
+      {signer && <LawStoneCreate signer={signer} />}
 
-      {!showCreate && <button onClick={() => setShowCreate(true)}>Create Law Stone</button>}
-      {signer && showCreate && <LawStoneCreate signer={signer} closeForm={() => setShowCreate(false)} />}
-
+      <h1>LawStones</h1>
       <div>
         <label htmlFor="filter">Filter by creator address</label>
         <input id="filter" type="text" value={filter} onChange={handleChange} />
       </div>
 
-      <div>
+      <div className="grix">
         {result?.map((address, idx) => (
           <LawStoneDetails address={address} filter={filter} key={idx} />
         ))}
@@ -57,4 +54,3 @@ export default function LawStones({address}: {address: string}) {
     </div>
   );
 }
-

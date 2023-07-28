@@ -27,7 +27,7 @@ export default function Cognitarium({ address }: { address: string }) {
 
   return (
     <div>
-      <h2>Cognitarium</h2>
+      <h1>Cognitarium</h1>
       <div>
         <label htmlFor="filter">Filter by sender address:</label>
         <input id="filter" type="text" value={filter} onChange={handleChange} />
