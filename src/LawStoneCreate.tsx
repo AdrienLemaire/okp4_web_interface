@@ -3,8 +3,15 @@ import { OfflineSigner } from "@cosmjs/proto-signing";
 import { Decimal } from "@cosmjs/math";
 import { GasPrice } from "@cosmjs/stargate";
 import { OKP4_ADDRESS, STORAGE_ADDRESS, TRANSACTION_MEMO } from "./constants";
+import { Dispatch, MouseEventHandler, SetStateAction } from "react";
 
-export default function LawStoneCreate({ signer }: { signer: OfflineSigner }) {
+export default function LawStoneCreate({
+  signer,
+  toggleForm,
+}: {
+  signer: OfflineSigner;
+  toggleForm: MouseEventHandler<HTMLButtonElement>
+}) {
   const { instantiateContract } = useInstantiateContract({
     codeId: 5,
     onError: () => {},
@@ -20,11 +27,12 @@ export default function LawStoneCreate({ signer }: { signer: OfflineSigner }) {
       storage_address: STORAGE_ADDRESS,
     };
     const options = { memo: TRANSACTION_MEMO, admin: OKP4_ADDRESS };
-    instantiateContract({ msg, options, label, });
+    instantiateContract({ msg, options, label });
   };
 
   return (
     <div>
+      <button onClick={toggleForm}>Close</button>
       <h3>Create Contract</h3>
       <form onSubmit={handleClick}>
         <label htmlFor="program">program</label>
