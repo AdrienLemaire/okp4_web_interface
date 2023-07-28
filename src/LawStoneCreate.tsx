@@ -7,10 +7,10 @@ import { Dispatch, MouseEventHandler, SetStateAction } from "react";
 
 export default function LawStoneCreate({
   signer,
-  toggleForm,
+  closeForm,
 }: {
   signer: OfflineSigner;
-  toggleForm: MouseEventHandler<HTMLButtonElement>
+  closeForm: MouseEventHandler<HTMLButtonElement>;
 }) {
   const { instantiateContract } = useInstantiateContract({
     codeId: 5,
@@ -32,7 +32,11 @@ export default function LawStoneCreate({
 
   return (
     <div>
-      <button onClick={toggleForm}>Close</button>
+      <button onClick={closeForm}>Close</button>
+      <div>
+        <p>Warning: This is not working</p>
+      </div>
+
       <h3>Create Contract</h3>
       <form onSubmit={handleClick}>
         <label htmlFor="program">program</label>

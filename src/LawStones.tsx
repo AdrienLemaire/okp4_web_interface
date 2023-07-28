@@ -42,7 +42,7 @@ export default function LawStones({address}: {address: string}) {
       <h2>LawStones</h2>
 
       {!showCreate && <button onClick={() => setShowCreate(true)}>Create Law Stone</button>}
-      {signer && showCreate && <LawStoneCreate signer={signer} toggleForm={() => setShowCreate(false)} />}
+      {signer && showCreate && <LawStoneCreate signer={signer} closeForm={() => setShowCreate(false)} />}
 
       <div>
         <label htmlFor="filter">Filter by creator address</label>

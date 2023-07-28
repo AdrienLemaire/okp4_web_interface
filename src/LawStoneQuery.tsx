@@ -20,13 +20,13 @@ type Tdata = {
   };
 };
 
-export const LawStoneQuery = ({ address, toggleForm }: { address: string, toggleForm: MouseEventHandler<HTMLButtonElement> }) => {
-  const [query, setQuery] = useState<string>("");
-  const { data, isSuccess } = useQuerySmart<Tdata, string>(address, { ask: { query } });
+export const LawStoneQuery = ({ address, closeForm }: { address: string, closeForm: MouseEventHandler<HTMLButtonElement> }) => {
+  const [query, setQuery] = useState<string | undefined>();
+  const { data, isSuccess } = useQuerySmart<Tdata, string>(address, query ? { ask: { query } } : undefined) ;
 
   return (
     <div>
-      <button onClick={toggleForm}>Close</button>
+      <button onClick={closeForm}>Close</button>
       <h2>Query Law Stone</h2>
       <form onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="query">Query</label>

@@ -63,7 +63,7 @@ export default function LawStoneDetails({address, filter}: TLawStoneDetails) {
           {/* instantiated date */}
 
         {!showQuery && <button onClick={() => setShowQuery(true)}>Query Law Stone</button>}
-        {showQuery && <LawStoneQuery address={address} toggleForm={() => setShowQuery(false)} />}
+        {showQuery && <LawStoneQuery address={address} closeForm={() => setShowQuery(false)} />}
 
           <div>decoded prolog program:</div>
  <pre>{decoded}</pre>
