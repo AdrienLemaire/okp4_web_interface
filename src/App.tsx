@@ -21,7 +21,7 @@ function App() {
         {activeTab === "law_stones" && (
           <div>
             {account ? (
-              <LawStones address={account.bech32Address} />
+              <LawStones myAddress={account.bech32Address} />
             ) : (
               <div>
                 <h1>LawStones</h1>

@@ -1,6 +1,6 @@
 import { Forms, Modal } from "axentix";
 import { useQuerySmart } from "graz";
-import { memo, useState, useCallback, useEffect } from "react";
+import { memo, useState, useCallback, useEffect, useRef } from "react";
 
 type Tdata = {
   answer: {
@@ -21,9 +21,9 @@ type Tdata = {
   };
 };
 
-// TODO: Move LawStoneQuery to LawStones. make it a wrapper around all LawStoneDetails, and pass them a method to trigger it with an address.
-// Apparently, having LawStoneQuery rendered from LawStoneDetails create binding issues with the mouse position.
-const LawStoneQuery = ({ address }: { address: string }) => {
+type TLawStoneQuery = { address?: string; setAddress: (addr?: string) => void };
+
+const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
   const [query, setQuery] = useState<string | undefined>();
   const { data, isSuccess } = useQuerySmart<Tdata, string>(address, query ? { ask: { query } } : undefined);
 
@@ -33,64 +33,78 @@ const LawStoneQuery = ({ address }: { address: string }) => {
     Forms.updateInputs();
   }, []);
 
-  const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
-    const modal = new Modal(`#query-${address}`, {
+    const newModal = new Modal("#query-law-stone", {
       overlay: true,
       animationDuration: 500,
     });
-    setModal(modal);
-    modal.el.addEventListener("ax.modal.close", () => setOpen(false));
+    setModal(newModal);
+    newModal.el.addEventListener("ax.modal.close", () => {
+      // Reset the form when the modal closes
+      setQuery("");
+      setAddress(undefined);
+    });
 
     return () => {
-      modal.destroy();
+      newModal.destroy();
     };
   }, []);
 
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  useEffect(() => {
+    if (address) modal?.open();
+    else modal?.close();
+  }, [address]);
+
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      if (!open) modal?.open();
-      else modal?.close();
+      const query = (event.currentTarget.elements.namedItem("query") as HTMLTextAreaElement).value;
+      setQuery(query);
     },
-    [open],
+    [address],
   );
 
-  return (
-    <>
-      <div className="d-flex fx-right">
-        <button className="btn shadow-1 secondary rounded-4" onClick={handleClick} data-target={`query-${address}`}>
-          Query Law Stone
-        </button>
-      </div>
+  // Apply syntax highlighting to the result
+  const codeRef = useRef(null);
+  useEffect(() => {
+    if (codeRef.current) {
+      // @ts-ignore global var
+      Prism.highlightElement(codeRef.current);
+    }
+  }, [data]);
 
-      <div className="modal shadow-1 white rounded-3 modal-bouncing" style={{ zIndex: 100 }} id={`query-${address}`} data-ax="modal">
-        <div className="modal-header">Query Law Stone</div>
-        <div className="modal-content">
-          <form className="form-material" onChange={handleChange} onSubmit={(e) => e.preventDefault()}>
-            <div className="form-field">
-              <label htmlFor="query">Query</label>
-              <textarea id="query" className="form-control" value={query} onChange={(e) => setQuery(e.target.value)} />
-            </div>
-            <div className="d-flex fx-center modal-footer">
-              <button className="btn rounded-1 primary btn-press" type="submit">
-                Query
-              </button>
-            </div>
-          </form>
-        </div>
+  return (
+    <div
+      className="modal shadow-1 white rounded-3 modal-bouncing"
+      style={{ zIndex: 100 }}
+      id="query-law-stone"
+      data-ax="modal"
+    >
+      <div className="modal-header">Query Law Stone</div>
+      <div className="modal-content">
+        <form className="form-material" onChange={handleChange} onSubmit={handleSubmit}>
+          <div className="form-field">
+            <label htmlFor="query">Query</label>
+            <textarea id="query" className="form-control" value={query} />
+          </div>
+          <div className="d-flex fx-center">
+            <button className="btn rounded-1 primary btn-press" type="submit">
+              Query
+            </button>
+          </div>
+        </form>
         {isSuccess && (
           <div>
             <h3>Result</h3>
-            {data?.answer?.success ? (
-              <pre>{JSON.stringify(data.answer.results, null, 2)}</pre>
-            ) : (
-              <pre>{JSON.stringify(data, null, 2)}</pre>
-            )}
+            <pre>
+              <code ref={codeRef} className="language-json">
+                {JSON.stringify(data, null, 2)}
+              </code>
+            </pre>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

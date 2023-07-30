@@ -2,15 +2,15 @@ import { useClients } from "graz";
 import type { Contract, ContractCodeHistoryEntry } from "@cosmjs/cosmwasm";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { fromBase64 } from "@cosmjs/encoding";
-import LawStoneQuery from "./LawStoneQuery";
 
 type TLawStoneDetails = {
   address: string;
   filter: string;
   setFilter: (filter: string) => void;
+  queryLawStone: () => void;
 };
 
-export default function LawStoneDetails({ address, filter, setFilter }: TLawStoneDetails) {
+export default function LawStoneDetails({ address, filter, setFilter, queryLawStone }: TLawStoneDetails) {
   const { data, isLoading } = useClients();
   const { cosmWasm } = data || {};
   const [contract, setContract] = useState<Contract | null>(null);
@@ -52,11 +52,10 @@ export default function LawStoneDetails({ address, filter, setFilter }: TLawSton
       // @ts-ignore global var
       Prism.highlightElement(codeRef.current);
     }
-  }, [code]);
+  }, [code, filter]);
 
-
-  if (filter && contract && contract.creator !== filter) return null;
-  if (contract && !decoded) return null; // Hide empty contracts
+  if (!!filter && !!contract && contract.creator !== filter) return null;
+  if (!!contract && !decoded) return null; // Hide empty contracts
 
   return (
     <div className="card shadow-1 hoverable-1 rounded-3 white p-4 d-flex fx-right" style={{ maxWidth: "90%" }}>
@@ -72,12 +71,19 @@ export default function LawStoneDetails({ address, filter, setFilter }: TLawSton
               <div className="font-s1 font-w500 text-secondary">{contract.creator}</div>
             </div>
           )}
-          <span className="font-s1 font-w500 text-primary">{address}</span> <div className="my-2">{contract.label}</div>
+          <span className="font-s1 font-w500 text-primary">{address}</span>
+          <div className="my-2">{contract.label}</div>
           {/* instantiated date */}
           <pre className="wb-break-word overflow-x-scroll">
-            <code ref={codeRef} className="language-prolog">{decoded}</code>
+            <code ref={codeRef} className="language-prolog">
+              {decoded}
+            </code>
           </pre>
-          <LawStoneQuery address={address} />
+          <div className="d-flex fx-right">
+            <button className="btn shadow-1 secondary rounded-4" onClick={queryLawStone} data-target="query-law-stone">
+              Query Law Stone
+            </button>
+          </div>
         </>
       )}
     </div>
