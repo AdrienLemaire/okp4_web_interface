@@ -42,7 +42,7 @@ export default function Header({
           OKP4 builder interface by MadeInTracker
         </a>
         <a href="https://www.madeintracker.com/" className="navbar-logo hide-xs-down">
-          <img src="/logo.png" className="logo" alt="MadeInTracker logo" />
+          <img src="/img/logo.png" className="logo" alt="MadeInTracker logo" />
         </a>
 
         <div className="navbar-menu ml-auto text-grey text-light-3 font-w600 hover-text-dark">

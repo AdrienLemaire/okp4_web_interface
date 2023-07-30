@@ -12,6 +12,7 @@ import { useClients, useOfflineSigners } from "graz";
 import { useState, useEffect, useCallback } from "react";
 import LawStoneDetails from "./LawStoneDetails";
 import LawStoneCreate from "./LawStoneCreate";
+import {Forms} from "axentix";
 
 export default function LawStones({ address }: { address: string }) {
   const { signer } = useOfflineSigners();
@@ -30,8 +31,16 @@ export default function LawStones({ address }: { address: string }) {
     }
   }, [isLoading, cosmWasm]);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
+  const handleFilter = useCallback((newFilter: string) => {
+    setFilter(newFilter);
+    setTimeout(Forms.updateInputs, 50);
+  }, [setFilter]);
+
+
+  const handleChange = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const filter = (event.target as HTMLFormElement).value;
+    handleFilter(filter);
   }, []);
 
   if (isLoading) return <div>Loading LawStones...</div>;
@@ -41,14 +50,16 @@ export default function LawStones({ address }: { address: string }) {
       {signer && <LawStoneCreate signer={signer} />}
 
       <h1>LawStones</h1>
-      <div>
-        <label htmlFor="filter">Filter by creator address</label>
-        <input id="filter" type="text" value={filter} onChange={handleChange} />
-      </div>
+      <form  onChange={handleChange} className="form-material" style={{width: "50%"}}>
+        <div className="form-field active">
+          <label htmlFor="filter">Filter by creator address</label>
+          <input id="filter" type="text" defaultValue={filter}  className="form-control" />
+        </div>
+      </form>
 
       <div className="grix">
         {result?.map((address, idx) => (
-          <LawStoneDetails address={address} filter={filter} key={idx} />
+          <LawStoneDetails address={address} filter={filter} setFilter={handleFilter} key={idx} />
         ))}
       </div>
     </div>

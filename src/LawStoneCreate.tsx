@@ -32,6 +32,7 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
     Forms.updateInputs();
   }, []);
 
+  const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     const modal = new Modal("#create-law-stone", {
       overlay: true,
@@ -40,18 +41,19 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
     setModal(modal);
     modal.el.addEventListener("ax.modal.close", () => setOpen(false));
 
-
     return () => {
       modal.destroy();
     };
   }, []);
 
-  const [open, setOpen] = useState<boolean>(false);
-  const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    event.preventDefault();
-    if (!open) modal?.open();
-    else modal?.close();
-  }, [open]);
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault();
+      if (!open) modal?.open();
+      else modal?.close();
+    },
+    [open],
+  );
 
   return (
     <>
@@ -82,9 +84,11 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
               <textarea id="program" className="form-control" />
             </div>
 
-            <button className="btn rounded-1 primary btn-press" type="submit">
-              Create Contract
-            </button>
+            <div className="modal-footer d-flex fx-center">
+              <button disabled className="btn rounded-1 primary btn-press center" type="submit">
+                Save
+              </button>
+            </div>
           </form>
         </div>
       </div>
