@@ -71,14 +71,19 @@ export default function LawStoneDetails({ address, filter, setFilter, queryLawSt
               <div className="font-s1 font-w500 text-secondary">{contract.creator}</div>
             </div>
           )}
-          <span className="font-s1 font-w500 text-primary">{address}</span>
-          <div className="my-2">{contract.label}</div>
-          {/* instantiated date */}
-          <pre className="wb-break-word overflow-x-scroll">
-            <code ref={codeRef} className="language-prolog">
-              {decoded}
-            </code>
-          </pre>
+          <div>
+            <span className="iconify-inline text-primary mr-2" data-icon={`mdi:filter-${contract.codeId}`}></span>
+            <span className="font-s1 font-w500 text-primary">{address}</span>
+          </div>
+          <div className="card-content">
+            <div className="my-2">{contract.label}</div>
+            {/* instantiated date */}
+            <pre className="wb-break-word overflow-x-scroll">
+              <code ref={codeRef} className="language-prolog">
+                {decoded}
+              </code>
+            </pre>
+          </div>
           <div className="d-flex fx-right">
             <button className="btn shadow-1 secondary rounded-4" onClick={queryLawStone} data-target="query-law-stone">
               Query Law Stone

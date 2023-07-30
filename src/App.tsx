@@ -34,7 +34,7 @@ function App() {
         {activeTab === "cognitarium" && (
           <div>
             {account ? (
-              <Cognitarium address={account.bech32Address} />
+              <Cognitarium myAddress={account.bech32Address} />
             ) : (
               <div>
                 <h1>Cognitarium</h1>

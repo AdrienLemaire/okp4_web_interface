@@ -3,6 +3,15 @@ import type { Contract } from "@cosmjs/cosmwasm";
 import { useState, useEffect } from "react";
 import RDFTripleInsert from "./RDFTripleInsert";
 
+const isUrl = (text: string) => {
+  try {
+    new URL(text);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
 type TCognitariumDetails = {
   address: string;
   filter: string;
@@ -51,7 +60,7 @@ export default function CognitariumDetails({ address, filter }: TCognitariumDeta
   const { data: clients, isLoading } = useClients();
   const { cosmWasm } = clients || {};
   const [contract, setContract] = useState<Contract | null>(null);
-  const [limit, setLimit] = useState<number>(2);
+  const [limit, setLimit] = useState<number>(5);
   const { data, isSuccess, error } = useQuerySmart<Tdata, string>(address, getSparqlQuery(limit));
   const [showInsert, setShowInsert] = useState<boolean>(false);
 
@@ -66,44 +75,116 @@ export default function CognitariumDetails({ address, filter }: TCognitariumDeta
     }
   }, [isLoading, cosmWasm]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLimit = parseInt(e.target.value);
-    if (newLimit > 0) setLimit(newLimit);
-  };
-
   if (filter && contract && contract.creator !== filter) return null;
 
+  if (!contract) return <div>Loading...</div>;
+
   return (
-    <div>
-      <h3>Law Stone {address}</h3>
+    <div className="card shadow-1 hoverable-1 rounded-3 white p-4 d-flex fx-right" style={{ maxWidth: "90%" }}>
+      {contract.creator && (
+        <div className="d-flex vcenter fx-row-reverse">
+          <button className="btn btn-circle ml-2">
+            {" "}
+            {/* onClick={() => setFilter(contract.creator)}> */}
+            <span className="iconify-inline text-secondary" data-icon="mdi:search"></span>
+          </button>
+          <div className="font-s1 font-w500 text-secondary">{contract.creator}</div>
+        </div>
+      )}
+
       <div>
-        <div>creator address: {contract?.creator}</div>
-        <div>label: {contract?.label}</div>
-        <div>Code id: {contract?.codeId}</div>
-        {/* instantiated date */}
+        <span className="iconify-inline text-primary mr-2" data-icon={`mdi:filter-${contract.codeId}`}></span>
+        <span className="font-s1 font-w500 text-primary">{address}</span>
+      </div>
+      <div className="my-2">{contract.label}</div>
+      {/* instantiated date */}
 
-        <div>
-          {!showInsert && <button onClick={() => setShowInsert(true)}>Insert RDF triples</button>}
-          {showInsert && <RDFTripleInsert contractAddress={address} closeForm={() => setShowInsert(false)} />}
-        </div>
-
-        <div>Data triples</div>
-        <input type="number" value={limit} onChange={handleChange} />
-        <div>
-          {/* @ts-ignore */}
-          {error !== null && <div>Error: {error.message}</div>}
-          {isSuccess && !error && data?.results
-            ? data.results.bindings.map((binding, index) => (
-                <div key={index} className="data-item">
-                  <div className="subject">{binding.subject.value.full}</div>
-                  <div className="predicate">{binding.predicate.value.full}</div>
-                  <div className="object">
-                    {typeof binding.service.value === "object" ? binding.service.value.full : binding.service.value}
-                  </div>
-                </div>
+      <div className="table-responsive card-content">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>subject</th>
+              <th>predicate</th>
+              <th>value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {error !== null && (
+              <tr>
+                {/* @ts-ignore */}
+                <td colSpan={3}>Error: {error.message}</td>
+              </tr>
+            )}
+            {isSuccess && !error && data?.results ? (
+              data.results.bindings.map((binding, index) => (
+                <tr key={index} className="data-item">
+                  <td className="wb-break-all">
+                    {isUrl(binding.subject.value.full) ? (
+                      <a
+                        className="text-grey text-dark-5"
+                        style={{ textDecoration: "underline" }}
+                        href={binding.subject.value.full}
+                      >
+                        {binding.subject.value.full.split("/").pop()}
+                      </a>
+                    ) : (
+                      binding.subject.value.full
+                    )}
+                  </td>
+                  <td>
+                    {isUrl(binding.predicate.value.full) ? (
+                      <a
+                        className="text-grey text-dark-5"
+                        style={{ textDecoration: "underline" }}
+                        href={binding.predicate.value.full}
+                      >
+                        {binding.predicate.value.full.split("/").pop()}
+                      </a>
+                    ) : (
+                      binding.predicate.value.full
+                    )}
+                  </td>
+                  <td className="wb-break-all">
+                    {typeof binding.service.value === "object" && isUrl(binding.service.value.full) ? (
+                      <a
+                        className="text-grey text-dark-5"
+                        style={{ textDecoration: "underline" }}
+                        href={binding.service.value.full}
+                      >
+                        {binding.service.value.full.split("/").pop()}
+                      </a>
+                    ) : (
+                      `${binding.service.value}`
+                    )}
+                  </td>
+                </tr>
               ))
-            : "Fetching data..."}
-        </div>
+            ) : (
+              <tr>
+                <td colSpan={3}>Fetching data...</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="d-flex fx-center">
+        <button className="btn btn-circle" onClick={() => setLimit(limit + 5)}>
+          <span className="iconify-inline text-secondary" data-icon="mdi:plus"></span>
+        </button>
+      </div>
+
+      <div className="d-flex fx-right">
+        {!showInsert && (
+          <button
+            className="btn shadow-1 secondary rounded-4"
+            data-target="insert-rdf-triple"
+            onClick={() => setShowInsert(true)}
+          >
+            Insert RDF triples
+          </button>
+        )}
+        {showInsert && <RDFTripleInsert contractAddress={address} closeForm={() => setShowInsert(false)} />}
       </div>
     </div>
   );

@@ -66,7 +66,7 @@ export default function LawStones({ myAddress }: { myAddress: string }) {
     <div>
       {signer && <LawStoneCreate signer={signer} />}
 
-      <h1>Law Stones</h1>
+      <h1 className="text-primary">Law Stones</h1>
       <div className="d-flex">
         <form onChange={handleChange} className="form-material" style={{ width: "50%" }}>
           <div className="form-field active">
