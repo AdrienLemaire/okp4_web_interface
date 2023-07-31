@@ -20,6 +20,10 @@ Dagda"](https://nemeton.okp4.network/builders/challenges#challenges)
 
 <p align="center">
     <img width="600" src="./public/img/README1.png" />
-    <p></p>
+</p>
+<p align="center">
     <img width="600" src="./public/img/README2.png" />
+</p>
+<p align="center">
+    <img width="600" src="./public/img/README3.png" />
 </p>
