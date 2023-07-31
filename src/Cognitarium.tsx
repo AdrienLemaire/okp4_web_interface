@@ -1,7 +1,8 @@
 import { Forms } from "axentix";
 import { useClients } from "graz";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, ChangeEventHandler } from "react";
 import CognitariumDetails from "./CognitariumDetails";
+import RDFTripleInsert from "./RDFTripleInsert";
 
 export default function Cognitarium({ myAddress }: { myAddress: string }) {
   const { data, isLoading } = useClients();
@@ -28,27 +29,35 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
     [setFilter],
   );
 
-  const handleChange = useCallback((event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const filter = (event.target as HTMLFormElement).value;
+  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(event => {
+    const filter = event.target.value;
     handleFilter(filter);
   }, []);
 
   if (isLoading) return <div>Loading Cognitarium...</div>;
 
+  const [address, setAddress] = useState<string>("");
   const cognitariums = useMemo(() => {
     if (!result) return null;
-    return result.map((address, idx) => <CognitariumDetails key={idx} filter={filter} address={address} />);
+    return result.map((addr, idx) => (
+      <CognitariumDetails
+        key={idx}
+        filter={filter}
+        address={addr}
+        setFilter={handleFilter}
+        insertRdfTriple={() => setAddress(addr)}
+      />
+    ));
   }, [result, filter]);
 
   return (
     <div>
       <h1 className="text-primary">Cognitarium</h1>
       <div className="d-flex">
-        <form onChange={handleChange} className="form-material" style={{ width: "50%" }}>
+        <form className="form-material" style={{ width: "50%" }}>
           <div className="form-field active">
             <label htmlFor="filter">Filter by sender address</label>
-            <input id="filter" type="text" value={filter} className="form-control" />
+            <input id="filter" type="text" value={filter} onChange={handleChange} className="form-control" />
           </div>
         </form>
 
@@ -65,6 +74,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
       </div>
 
       <div className="grix">{cognitariums}</div>
+      <RDFTripleInsert contractAddress={address} setContractAddress={setAddress} />
     </div>
   );
 }

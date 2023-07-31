@@ -27,12 +27,21 @@ const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
   const [query, setQuery] = useState<string | undefined>();
   const { data, isSuccess } = useQuerySmart<Tdata, string>(address, query ? { ask: { query } } : undefined);
 
-  const [modal, setModal] = useState<Modal>();
   const handleChange = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     Forms.updateInputs();
   }, []);
 
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const query = (event.currentTarget.elements.namedItem("query") as HTMLTextAreaElement).value;
+      setQuery(query);
+    },
+    [address],
+  );
+
+  const [modal, setModal] = useState<Modal>();
   useEffect(() => {
     const newModal = new Modal("#query-law-stone", {
       overlay: true,
@@ -54,15 +63,6 @@ const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
     if (address) modal?.open();
     else modal?.close();
   }, [address]);
-
-  const handleSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const query = (event.currentTarget.elements.namedItem("query") as HTMLTextAreaElement).value;
-      setQuery(query);
-    },
-    [address],
-  );
 
   // Apply syntax highlighting to the result
   const codeRef = useRef(null);
@@ -93,6 +93,7 @@ const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
             </button>
           </div>
         </form>
+
         {isSuccess && (
           <div>
             <h3>Result</h3>

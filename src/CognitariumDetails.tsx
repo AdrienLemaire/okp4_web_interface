@@ -1,7 +1,6 @@
 import { useClients, useQuerySmart } from "graz";
 import type { Contract } from "@cosmjs/cosmwasm";
 import { useState, useEffect } from "react";
-import RDFTripleInsert from "./RDFTripleInsert";
 
 const isUrl = (text: string) => {
   try {
@@ -15,6 +14,8 @@ const isUrl = (text: string) => {
 type TCognitariumDetails = {
   address: string;
   filter: string;
+  setFilter: (filter: string) => void;
+  insertRdfTriple: () => void;
 };
 
 type Tdata = {
@@ -56,13 +57,12 @@ const getSparqlQuery = (limit: number) => ({
   },
 });
 
-export default function CognitariumDetails({ address, filter }: TCognitariumDetails) {
+export default function CognitariumDetails({ address, filter, setFilter, insertRdfTriple }: TCognitariumDetails) {
   const { data: clients, isLoading } = useClients();
   const { cosmWasm } = clients || {};
   const [contract, setContract] = useState<Contract | null>(null);
   const [limit, setLimit] = useState<number>(5);
   const { data, isSuccess, error } = useQuerySmart<Tdata, string>(address, getSparqlQuery(limit));
-  const [showInsert, setShowInsert] = useState<boolean>(false);
 
   useEffect(() => {
     if (filter && contract && contract.creator !== filter) return;
@@ -81,11 +81,9 @@ export default function CognitariumDetails({ address, filter }: TCognitariumDeta
 
   return (
     <div className="card shadow-1 hoverable-1 rounded-3 white p-4 d-flex fx-right" style={{ maxWidth: "90%" }}>
-      {contract.creator && (
+      {filter !== contract.creator && (
         <div className="d-flex vcenter fx-row-reverse">
-          <button className="btn btn-circle ml-2">
-            {" "}
-            {/* onClick={() => setFilter(contract.creator)}> */}
+          <button className="btn btn-circle ml-2" onClick={() => setFilter(contract.creator)}>
             <span className="iconify-inline text-secondary" data-icon="mdi:search"></span>
           </button>
           <div className="font-s1 font-w500 text-secondary">{contract.creator}</div>
@@ -175,16 +173,9 @@ export default function CognitariumDetails({ address, filter }: TCognitariumDeta
       </div>
 
       <div className="d-flex fx-right">
-        {!showInsert && (
-          <button
-            className="btn shadow-1 secondary rounded-4"
-            data-target="insert-rdf-triple"
-            onClick={() => setShowInsert(true)}
-          >
-            Insert RDF triples
-          </button>
-        )}
-        {showInsert && <RDFTripleInsert contractAddress={address} closeForm={() => setShowInsert(false)} />}
+        <button className="btn shadow-1 secondary rounded-4" data-target="insert-rdf-triple" onClick={insertRdfTriple}>
+          Insert RDF triples
+        </button>
       </div>
     </div>
   );
