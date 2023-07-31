@@ -1,3 +1,4 @@
+import { Icon } from "@iconify/react";
 import { Forms, Modal } from "axentix";
 import { useExecuteContract } from "graz";
 import { ChangeEventHandler, useCallback, useEffect, useRef, useState } from "react";
@@ -67,7 +68,9 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
     Forms.updateInputs();
 
     return () => {
+      try {
       newModal.destroy();
+      } catch (e) {}
     };
   }, []);
 
@@ -93,7 +96,8 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
       data-ax="modal"
     >
       <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
-        <span className="iconify-inline" data-icon="mdi:alert-octagon"></span> Not working yet
+        <Icon className="iconify-inline" icon="mdi:alert-octagon" />
+        Not working yet
       </div>
 
       <div className="modal-header">Insert RDF Triples</div>

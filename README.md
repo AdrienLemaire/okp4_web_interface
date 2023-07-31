@@ -19,6 +19,7 @@ Dagda"](https://nemeton.okp4.network/builders/challenges#challenges)
 > knowledge.
 
 <p align="center">
-    <img width="600" src="./public/img/README1.png" style="margin-bottom: 3rem;" />
+    <img width="600" src="./public/img/README1.png" />
+    <p></p>
     <img width="600" src="./public/img/README2.png" />
 </p>

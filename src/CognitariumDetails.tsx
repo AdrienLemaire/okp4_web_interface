@@ -1,6 +1,7 @@
 import { useClients, useQuerySmart } from "graz";
 import type { Contract } from "@cosmjs/cosmwasm";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Icon } from "@iconify/react";
 
 const isUrl = (text: string) => {
   try {
@@ -36,7 +37,7 @@ type Tdata = {
   };
 };
 
-const getSparqlQuery = (limit: number) => ({
+const getSparqlQuery = (limit: number | null) => ({
   select: {
     query: {
       prefixes: [{ prefix: "okp4", namespace: "https://ontology.okp4.space/" }],
@@ -61,7 +62,7 @@ export default function CognitariumDetails({ address, filter, setFilter, insertR
   const { data: clients, isLoading } = useClients();
   const { cosmWasm } = clients || {};
   const [contract, setContract] = useState<Contract | null>(null);
-  const [limit, setLimit] = useState<number>(5);
+  const [limit, setLimit] = useState<number | null>(5);
   const { data, isSuccess, error } = useQuerySmart<Tdata, string>(address, getSparqlQuery(limit));
 
   useEffect(() => {
@@ -75,6 +76,12 @@ export default function CognitariumDetails({ address, filter, setFilter, insertR
     }
   }, [isLoading, cosmWasm]);
 
+  const handleClick = useCallback(() => {
+    console.log("limit", limit);
+    if (limit === 5) setLimit(null);
+    else setLimit(5);
+  }, [limit]);
+
   if (filter && contract && contract.creator !== filter) return null;
 
   if (!contract) return <div>Loading...</div>;
@@ -84,14 +91,14 @@ export default function CognitariumDetails({ address, filter, setFilter, insertR
       {filter !== contract.creator && (
         <div className="d-flex vcenter fx-row-reverse">
           <button className="btn btn-circle ml-2" onClick={() => setFilter(contract.creator)}>
-            <span className="iconify-inline text-secondary" data-icon="mdi:search"></span>
+            <Icon className="iconify-inline text-secondary" icon="mdi:search" />
           </button>
           <div className="font-s1 font-w500 text-secondary">{contract.creator}</div>
         </div>
       )}
 
       <div>
-        <span className="iconify-inline text-primary mr-2" data-icon={`mdi:filter-${contract.codeId}`}></span>
+        <Icon className="iconify-inline text-primary mr-2" icon={`mdi:filter-${contract.codeId}`} />
         <span className="font-s1 font-w500 text-primary">{address}</span>
       </div>
       <div className="my-2">{contract.label}</div>
@@ -167,8 +174,11 @@ export default function CognitariumDetails({ address, filter, setFilter, insertR
       </div>
 
       <div className="d-flex fx-center">
-        <button className="btn btn-circle" onClick={() => setLimit(limit + 5)}>
-          <span className="iconify-inline text-secondary" data-icon="mdi:plus"></span>
+        <button className="btn btn-circle" onClick={handleClick}>
+          <Icon
+            className="iconify-inline text-secondary"
+            icon={limit === 5 ? "mdi:chevron-double-down" : "mdi:chevron-double-up"}
+          />
         </button>
       </div>
 
