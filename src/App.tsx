@@ -10,7 +10,7 @@ configureGraz({
 });
 
 function App() {
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState("default");
   const { data: account } = useAccount();
 
   return (
@@ -24,8 +24,8 @@ function App() {
               <LawStones myAddress={account.bech32Address} />
             ) : (
               <div>
-                <h1>LawStones</h1>
-                <p>Content for LawStones...</p>
+                <h1>Law Stones</h1>
+                <p>Please sign in from the "Profile" menu</p>
               </div>
             )}
           </div>
@@ -38,9 +38,21 @@ function App() {
             ) : (
               <div>
                 <h1>Cognitarium</h1>
-                <p>Content for Cognitarium...</p>
+                <p>Please sign in from the "Profile" menu</p>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === "default" && (
+          <div className="d-flex fx-col vcenter mt-auto" style={{ justifyContent: "center", height: "80vh" }}>
+            <h1 className="my-5">Choose your path</h1>
+            <button className="btn shadow-1 rounded-1 primary my-5" onClick={() => setActiveTab("law_stones")}>
+              Law Stones
+            </button>
+            <button className="btn shadow-1 rounded-1 secondary my-5" onClick={() => setActiveTab("cognitarium")}>
+              Cognitarium
+            </button>
           </div>
         )}
       </main>

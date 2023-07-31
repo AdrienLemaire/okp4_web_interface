@@ -36,13 +36,13 @@ export default function Header({
     <header className="navbar-fixed">
       <nav className="navbar shadow-1 primary">
         <a href="https://okp4.network/" className="navbar-logo hide-xs">
-          <img src={okp4Logo} className="logo" alt="OKP4 logo" />
+          <img src={okp4Logo} className="logo claymorphism" alt="OKP4 logo" />
         </a>
         <a href="#" className="navbar-brand hide-sm-down">
           OKP4 builder interface by MadeInTracker
         </a>
         <a href="https://www.madeintracker.com/" className="navbar-logo hide-xs-down">
-          <img src="/img/logo.png" className="logo" alt="MadeInTracker logo" />
+          <img src="/img/logo.png" className="logo claymorphism" alt="MadeInTracker logo" />
         </a>
 
         <div className="navbar-menu ml-auto text-grey text-light-3 font-w600 hover-text-dark">
