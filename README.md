@@ -27,3 +27,12 @@ Dagda"](https://nemeton.okp4.network/builders/challenges#challenges)
 <p align="center">
     <img width="600" src="./public/img/README3.png" />
 </p>
+
+
+
+## Setup
+
+```console
+$ yarn install
+$ yarn dev
+```

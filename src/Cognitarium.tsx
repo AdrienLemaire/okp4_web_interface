@@ -42,6 +42,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
     return result.map((addr, idx) => (
       <CognitariumDetails
         key={idx}
+        myAddress={myAddress}
         filter={filter}
         address={addr}
         setFilter={handleFilter}

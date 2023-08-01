@@ -18,10 +18,11 @@ type TRDFTripleInsert = { contractAddress: string; setContractAddress: (address:
 
 export default function RDFTripleInsert({ contractAddress, setContractAddress }: TRDFTripleInsert): JSX.Element | null {
   const [result, setResult] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const { executeContract, isSuccess } = useExecuteContract({
     contractAddress,
     // @ts-ignore
-    onError: (error) => setResult(error.message),
+    onError: (error) => setError(error.message),
     onLoading: () => setResult("Loading..."),
     onSuccess: (result) => setResult(`TX: ${result.transactionHash}`),
   });
@@ -41,7 +42,9 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
         reader.onload = () => {
           const text = reader.result;
           if (typeof text === "string") {
-            executeContract(formatQuery(text));
+            const encoded = btoa(text);
+            const args = formatQuery(encoded);
+            executeContract(args);
           }
         };
         reader.readAsText(file);
@@ -69,7 +72,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
 
     return () => {
       try {
-      newModal.destroy();
+        newModal.destroy();
       } catch (e) {}
     };
   }, []);
@@ -95,13 +98,15 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
       id="insert-rdf-triple"
       data-ax="modal"
     >
-      <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
-        <Icon className="iconify-inline" icon="mdi:alert-octagon" />
-        Not working yet
-      </div>
-
       <div className="modal-header">Insert RDF Triples</div>
       <div className="modal-content">
+        {error && (
+          <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
+            <Icon className="iconify-inline" icon="mdi:alert-octagon" />
+            {error}
+          </div>
+        )}
+
         <form className="form-material" onSubmit={handleSubmit}>
           <div className="form-field form-file text-black">
             <label htmlFor="file">Turtle file</label>
@@ -109,7 +114,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
             <div className="form-file-path text-black"></div>
           </div>
           <div className="d-flex fx-center">
-            <button disabled className="btn rounded-1 primary btn-press" type="submit">
+            <button className="btn rounded-1 primary btn-press" type="submit">
               Upload
             </button>
           </div>

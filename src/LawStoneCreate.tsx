@@ -1,18 +1,22 @@
-import { useInstantiateContract, useSigningClients } from "graz";
-import { OfflineSigner } from "@cosmjs/proto-signing";
-import { Decimal } from "@cosmjs/math";
-import { GasPrice } from "@cosmjs/stargate";
+import { useInstantiateContract, useOfflineSigners } from "graz";
 import { OKP4_ADDRESS, STORAGE_ADDRESS, TRANSACTION_MEMO } from "./constants";
-import { Dispatch, memo, MouseEventHandler, SetStateAction, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Forms, Modal } from "axentix";
+import {Icon} from "@iconify/react";
 
-const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
+const LawStoneCreate = ({ setRefresh }: { setRefresh: (addr: string) => void }) => {
   const [modal, setModal] = useState<Modal>();
+  useOfflineSigners();
+
+  const [error, setError] = useState<string | null>(null);
 
   const { instantiateContract } = useInstantiateContract({
     codeId: 5,
-    onError: () => {},
-    onSuccess: ({ contractAddress }: { contractAddress: string }) => console.log("Address: ", contractAddress),
+    onError: (e) => setError((e as Error).message),
+    onSuccess: ({ contractAddress }: { contractAddress: string }) => {
+      setRefresh(contractAddress);
+      modal?.close();
+    },
   });
 
   const handleSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
@@ -66,13 +70,15 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
       </button>
 
       <div className="modal shadow-1 white rounded-3 modal-bouncing" style={{ zIndex: 100 }} id="create-law-stone">
-        <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
-          <span className="iconify-inline" data-icon="mdi:alert-octagon"></span> Not working yet
-        </div>
-
         <div className="modal-header">Create Contract</div>
 
         <div className="modal-content">
+          {error && (
+            <div className="p-3 my-2 rounded-1 red light-4 text-red text-dark-4 bd-solid bd-red bd-1">
+              <Icon className="iconify-inline" icon="mdi:alert-octagon" />
+              {error}
+            </div>
+          )}
           <form className="form-material" onSubmit={handleSubmit} onChange={handleChange}>
             <div className="form-field">
               <label htmlFor="label">label</label>
@@ -85,7 +91,7 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
             </div>
 
             <div className="modal-footer d-flex fx-center">
-              <button disabled className="btn rounded-1 primary btn-press center" type="submit">
+              <button className="btn rounded-1 primary btn-press center" type="submit">
                 Save
               </button>
             </div>
@@ -98,6 +104,8 @@ const LawStoneCreate = ({ signer }: { signer: OfflineSigner }) => {
 
 export default memo(LawStoneCreate);
 
+// Alternative implementation when useInstantiateContract didn't work
+//
 //export default function LawStoneCreate({ signer }: { signer: OfflineSigner }) {
 //  const signingClientsArgs = {
 //    cosmWasmSignerOptions: {

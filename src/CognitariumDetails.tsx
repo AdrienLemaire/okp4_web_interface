@@ -14,6 +14,7 @@ const isUrl = (text: string) => {
 
 type TCognitariumDetails = {
   address: string;
+  myAddress: string;
   filter: string;
   setFilter: (filter: string) => void;
   insertRdfTriple: () => void;
@@ -58,7 +59,13 @@ const getSparqlQuery = (limit: number | null) => ({
   },
 });
 
-export default function CognitariumDetails({ address, filter, setFilter, insertRdfTriple }: TCognitariumDetails) {
+export default function CognitariumDetails({
+  address,
+  myAddress,
+  filter,
+  setFilter,
+  insertRdfTriple,
+}: TCognitariumDetails) {
   const { data: clients, isLoading } = useClients();
   const { cosmWasm } = clients || {};
   const [contract, setContract] = useState<Contract | null>(null);
@@ -182,11 +189,17 @@ export default function CognitariumDetails({ address, filter, setFilter, insertR
         </button>
       </div>
 
-      <div className="d-flex fx-right">
-        <button className="btn shadow-1 secondary rounded-4" data-target="insert-rdf-triple" onClick={insertRdfTriple}>
-          Insert RDF triples
-        </button>
-      </div>
+      {myAddress === contract.creator && (
+        <div className="d-flex fx-right">
+          <button
+            className="btn shadow-1 secondary rounded-4"
+            data-target="insert-rdf-triple"
+            onClick={insertRdfTriple}
+          >
+            Insert RDF triples
+          </button>
+        </div>
+      )}
     </div>
   );
 }

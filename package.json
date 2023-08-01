@@ -1,5 +1,5 @@
 {
-  "name": "@project/example-vite",
+  "name": "okp4_web_interface",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -32,8 +32,13 @@
     "vite": "^4.3.9",
     "vite-plugin-node-stdlib-browser": "^0.2.1"
   },
+  "overrides": {
+    "@cosmjs/cosmwasm-stargate": "^0.31.0",
+    "@cosmjs/proto-signing": "^0.31.0",
+    "@cosmjs/stargate": "^0.31.0"
+  },
   "prettier": "@strangelovelabs/style-guide/prettier",
-  "private": true,
+  "private": false,
   "volta": {
     "node": "18.17.0"
   }
