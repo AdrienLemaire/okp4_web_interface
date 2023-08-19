@@ -52,16 +52,20 @@ const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
       // Reset the form when the modal closes
       setQuery("");
       setAddress(undefined);
+      const field = document.getElementById("query") as HTMLInputElement;
+      field!.value = "";
     });
+    Forms.updateInputs();
 
     return () => {
-      newModal.destroy();
+      try {
+        newModal.destroy();
+      } catch (e) {}
     };
   }, []);
 
   useEffect(() => {
     if (address) modal?.open();
-    else modal?.close();
   }, [address]);
 
   // Apply syntax highlighting to the result
@@ -85,7 +89,11 @@ const LawStoneQuery = ({ address, setAddress }: TLawStoneQuery) => {
         <form className="form-material" onChange={handleChange} onSubmit={handleSubmit}>
           <div className="form-field">
             <label htmlFor="query">Query</label>
-            <textarea id="query" className="form-control" value={query} />
+            <textarea
+              id="query"
+              className="form-control"
+              defaultValue={query}
+            />
           </div>
           <div className="d-flex fx-center">
             <button className="btn rounded-1 primary btn-press" type="submit">

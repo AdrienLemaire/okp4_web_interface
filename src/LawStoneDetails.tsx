@@ -1,7 +1,7 @@
 import { useClients } from "graz";
 import type { Contract, ContractCodeHistoryEntry } from "@cosmjs/cosmwasm";
 import { useState, useEffect, useMemo, useRef } from "react";
-import { fromBase64 } from "@cosmjs/encoding";
+import {decodeStr} from "./utils";
 
 type TLawStoneDetails = {
   address: string;
@@ -32,13 +32,8 @@ export default function LawStoneDetails({ address, filter, setFilter, queryLawSt
 
   const decoded = useMemo(() => {
     try {
-      if (!code || !code[0] || !code[0].msg.program) {
-        return null; // or some default value
-      }
-
-      const decoder = new TextDecoder();
-      const decodedUint8Array = fromBase64(code[0].msg.program as string);
-      return decoder.decode(decodedUint8Array);
+      if (!code || !code[0] || !code[0].msg.program) return null; // or some default value
+      return decodeStr(code[0].msg.program as string);
     } catch (error) {
       console.log("Error decoding prolog program", error);
       return null; // or some default value

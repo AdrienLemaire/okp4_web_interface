@@ -7,3 +7,11 @@ export const encodeStr = (text: string): string => {
   // 3: encode base64
   return btoa(binaryStr);
 };
+
+export const decodeStr = (base64Str: string): string => {
+  //  fromBase64 from "@cosmjs/encoding" is broken on some instances, unreliable
+  const binaryStr = atob(base64Str);
+  const charCodes = binaryStr.split('').map((char) => char.charCodeAt(0));
+  const decoder = new TextDecoder();
+  return decoder.decode(new Uint8Array(charCodes));
+}

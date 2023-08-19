@@ -29,6 +29,7 @@ export default function RDFTripleInsert({
   componentIdxRef.current = componentIdx;
 
   const [result, setResult] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const handleClose = useCallback(
     (closeModal: boolean = true) => {
@@ -48,13 +49,12 @@ export default function RDFTripleInsert({
     onError: (error) => {
       // @ts-ignore
       setError(error.message);
-      // getting error 'Invalid string. Length must be a multiple of 4'
-      // useExecuteContract
+      // useExecuteContract still returns errors when on successful updates
       const ignoreText = "Invalid string. Length must be a multiple of 4";
       // @ts-ignore
       if (error.message === ignoreText) handleClose();
     },
-    onLoading: () => setResult("Loading..."),
+    onLoading: () => setLoading(true),
     onSuccess: (result) => setResult(`TX: ${result.transactionHash}`),
   });
 
@@ -140,9 +140,18 @@ export default function RDFTripleInsert({
             <div className="form-file-path text-black"></div>
           </div>
           <div className="modal-footer d-flex fx-center">
-            <button className="btn rounded-1 primary btn-press" type="submit">
-              Upload
-            </button>
+            {loading ? (
+              <div className="spinner spinner-large text-blue">
+                <span className="spinner-text">...</span>
+                <svg viewBox="0 0 100 100">
+                  <circle className="spinner-path" cx="50" cy="50" r="30" fill="none" stroke-width="3" />
+                </svg>
+              </div>
+            ) : (
+              <button className="btn rounded-1 primary btn-press" type="submit">
+                Upload
+              </button>
+            )}
           </div>
         </form>
       </div>
