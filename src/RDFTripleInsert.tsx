@@ -15,22 +15,33 @@ const formatQuery = (data: string) => ({
   memo: TRANSACTION_MEMO,
 });
 
-type TRDFTripleInsert = { contractAddress: string; setContractAddress: (address: string) => void };
+// [address, componentIndex, shouldRebuild]
+type TCurrent = [string, number, boolean];
 
-export default function RDFTripleInsert({ contractAddress, setContractAddress }: TRDFTripleInsert): JSX.Element | null {
+type TRDFTripleInsert = { current: TCurrent; setCurrent: (current: TCurrent) => void };
+
+export default function RDFTripleInsert({
+  current: [contractAddress, componentIdx, _],
+  setCurrent,
+}: TRDFTripleInsert): JSX.Element | null {
   const [modal, setModal] = useState<Modal>();
+  const componentIdxRef = useRef(componentIdx);
+  componentIdxRef.current = componentIdx;
 
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const handleClose = useCallback(() => {
-    // Reset the form when the modal closes
-    setContractAddress("");
-    setError(null);
-    const field = document.getElementById("file") as HTMLInputElement;
-    field!.value = "";
-    document.querySelector('.form-file-path')!.textContent = '';
-    modal?.close();
-  }, [modal]);
+  const handleClose = useCallback(
+    (closeModal: boolean = true) => {
+      // Reset the form when the modal closes
+      setCurrent(["", componentIdxRef.current, true]);
+      setError(null);
+      const field = document.getElementById("file") as HTMLInputElement;
+      field!.value = "";
+      document.querySelector(".form-file-path")!.textContent = "";
+      if (closeModal) modal?.close();
+    },
+    [modal, setCurrent, componentIdx],
+  );
 
   const { executeContract, isSuccess } = useExecuteContract({
     contractAddress,
@@ -82,10 +93,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
       animationDuration: 500,
     });
     setModal(newModal);
-    newModal.el.addEventListener("ax.modal.close", () => {
-      handleClose();
-    });
-
+    newModal.el.addEventListener("ax.modal.close", () => handleClose(false));
     Forms.updateInputs();
 
     return () => {
@@ -98,7 +106,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
   useEffect(() => {
     if (contractAddress) modal?.open();
     else handleClose();
-  }, [contractAddress]);
+  }, [contractAddress, modal]);
 
   // Apply syntax highlighting to the result
   const codeRef = useRef(null);

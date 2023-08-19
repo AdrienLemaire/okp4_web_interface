@@ -4,12 +4,15 @@ import { useState, useEffect, useCallback, useMemo, ChangeEventHandler } from "r
 import CognitariumDetails from "./CognitariumDetails";
 import RDFTripleInsert from "./RDFTripleInsert";
 
+// [address, componentIndex, shouldRebuild]
+type TCurrent = [string, number, boolean];
+
 export default function Cognitarium({ myAddress }: { myAddress: string }) {
   const { data, isLoading } = useClients();
   const { cosmWasm } = data || {};
   const [result, setResult] = useState<readonly string[] | null>(null);
   const [filter, setFilter] = useState<string>(myAddress);
-  const [address, setAddress] = useState<string>("");
+  const [current, setCurrent] = useState<TCurrent>(["", -1, false]);
 
   useEffect(() => {
     if (!cosmWasm) return;
@@ -20,7 +23,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
       setResult([...cognitarium6, ...cognitarium7]);
     };
     fetchData();
-  }, [cosmWasm, address]);
+  }, [cosmWasm, current]);
 
   const handleFilter = useCallback(
     (newFilter: string) => {
@@ -30,27 +33,33 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
     [setFilter],
   );
 
-  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(event => {
+  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>((event) => {
     const filter = event.target.value;
     handleFilter(filter);
   }, []);
 
   if (isLoading) return <div>Loading Cognitarium...</div>;
 
+  useEffect(() => {
+    const [addr, , shouldRebuild] = current;
+    if (addr === "" && shouldRebuild) setCurrent(["", -1, false]);
+  }, [current, setCurrent]);
+
   const cognitariums = useMemo(() => {
     if (!result) return null;
+    const [_, rebuildIdx, shouldRebuild] = current;
+
     return result.map((addr, idx) => (
       <CognitariumDetails
-        key={idx}
+        key={shouldRebuild && rebuildIdx === idx ? 30 : idx}
         myAddress={myAddress}
         filter={filter}
         address={addr}
         setFilter={handleFilter}
-        insertRdfTriple={() => setAddress(addr)}
+        insertRdfTriple={() => setCurrent([addr, idx, false])}
       />
     ));
-  }, [result, filter]);
-
+  }, [result, filter, current]);
   return (
     <div>
       <h1 className="text-primary">Cognitarium</h1>
@@ -75,7 +84,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
       </div>
 
       <div className="grix">{cognitariums}</div>
-      <RDFTripleInsert contractAddress={address} setContractAddress={setAddress} />
+      <RDFTripleInsert current={current} setCurrent={setCurrent} />
     </div>
   );
 }

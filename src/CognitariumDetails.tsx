@@ -83,7 +83,7 @@ export default function CognitariumDetails({
     }
   }, [isLoading, cosmWasm]);
 
-  const handleClick = useCallback(() => (setLimit(limit === 5 ? null : 5)), [limit]);
+  const handleClick = useCallback(() => setLimit(limit === 5 ? null : 5), [limit]);
 
   if (filter && contract && contract.creator !== filter) return null;
 
@@ -177,15 +177,16 @@ export default function CognitariumDetails({
           </tbody>
         </table>
       </div>
-
-      <div className="d-flex fx-center">
-        <button className="btn btn-circle" onClick={handleClick}>
-          <Icon
-            className="iconify-inline text-secondary"
-            icon={limit === 5 ? "mdi:chevron-double-down" : "mdi:chevron-double-up"}
-          />
-        </button>
-      </div>
+      {!(data?.results && data.results.bindings.length <= 5 && !limit) && (
+        <div className="d-flex fx-center">
+          <button className="btn btn-circle" onClick={handleClick}>
+            <Icon
+              className="iconify-inline text-secondary"
+              icon={limit === 5 ? "mdi:chevron-double-down" : "mdi:chevron-double-up"}
+            />
+          </button>
+        </div>
+      )}
 
       {myAddress === contract.creator && (
         <div className="d-flex fx-right">
