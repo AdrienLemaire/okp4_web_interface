@@ -9,6 +9,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
   const { cosmWasm } = data || {};
   const [result, setResult] = useState<readonly string[] | null>(null);
   const [filter, setFilter] = useState<string>(myAddress);
+  const [address, setAddress] = useState<string>("");
 
   useEffect(() => {
     if (!cosmWasm) return;
@@ -19,7 +20,7 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
       setResult([...cognitarium6, ...cognitarium7]);
     };
     fetchData();
-  }, [cosmWasm]);
+  }, [cosmWasm, address]);
 
   const handleFilter = useCallback(
     (newFilter: string) => {
@@ -36,7 +37,6 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
 
   if (isLoading) return <div>Loading Cognitarium...</div>;
 
-  const [address, setAddress] = useState<string>("");
   const cognitariums = useMemo(() => {
     if (!result) return null;
     return result.map((addr, idx) => (

@@ -3,6 +3,7 @@ import { Forms, Modal } from "axentix";
 import { useExecuteContract } from "graz";
 import { ChangeEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import { TRANSACTION_MEMO } from "./constants";
+import { encodeStr } from "./utils";
 
 const formatQuery = (data: string) => ({
   msg: {
@@ -17,12 +18,31 @@ const formatQuery = (data: string) => ({
 type TRDFTripleInsert = { contractAddress: string; setContractAddress: (address: string) => void };
 
 export default function RDFTripleInsert({ contractAddress, setContractAddress }: TRDFTripleInsert): JSX.Element | null {
+  const [modal, setModal] = useState<Modal>();
+
   const [result, setResult] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const handleClose = useCallback(() => {
+    // Reset the form when the modal closes
+    setContractAddress("");
+    setError(null);
+    const field = document.getElementById("file") as HTMLInputElement;
+    field!.value = "";
+    document.querySelector('.form-file-path')!.textContent = '';
+    modal?.close();
+  }, [modal]);
+
   const { executeContract, isSuccess } = useExecuteContract({
     contractAddress,
-    // @ts-ignore
-    onError: (error) => setError(error.message),
+    onError: (error) => {
+      // @ts-ignore
+      setError(error.message);
+      // getting error 'Invalid string. Length must be a multiple of 4'
+      // useExecuteContract
+      const ignoreText = "Invalid string. Length must be a multiple of 4";
+      // @ts-ignore
+      if (error.message === ignoreText) handleClose();
+    },
     onLoading: () => setResult("Loading..."),
     onSuccess: (result) => setResult(`TX: ${result.transactionHash}`),
   });
@@ -42,7 +62,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
         reader.onload = () => {
           const text = reader.result;
           if (typeof text === "string") {
-            const encoded = btoa(text);
+            const encoded = encodeStr(text);
             const args = formatQuery(encoded);
             executeContract(args);
           }
@@ -56,7 +76,6 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
     Forms.updateInputs();
   };
 
-  const [modal, setModal] = useState<Modal>();
   useEffect(() => {
     const newModal = new Modal("#insert-rdf-triple", {
       overlay: true,
@@ -64,8 +83,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
     });
     setModal(newModal);
     newModal.el.addEventListener("ax.modal.close", () => {
-      // Reset the form when the modal closes
-      setContractAddress("");
+      handleClose();
     });
 
     Forms.updateInputs();
@@ -79,7 +97,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
 
   useEffect(() => {
     if (contractAddress) modal?.open();
-    else modal?.close();
+    else handleClose();
   }, [contractAddress]);
 
   // Apply syntax highlighting to the result
@@ -113,7 +131,7 @@ export default function RDFTripleInsert({ contractAddress, setContractAddress }:
             <input id="file" name="file" type="file" className="form-control text-black" onChange={handleChange} />
             <div className="form-file-path text-black"></div>
           </div>
-          <div className="d-flex fx-center">
+          <div className="modal-footer d-flex fx-center">
             <button className="btn rounded-1 primary btn-press" type="submit">
               Upload
             </button>

@@ -41,7 +41,7 @@ type Tdata = {
 const getSparqlQuery = (limit: number | null) => ({
   select: {
     query: {
-      prefixes: [{ prefix: "okp4", namespace: "https://ontology.okp4.space/" }],
+      prefixes: [],
       select: [{ variable: "subject" }, { variable: "predicate" }, { variable: "service" }],
       where: [
         {
@@ -83,11 +83,7 @@ export default function CognitariumDetails({
     }
   }, [isLoading, cosmWasm]);
 
-  const handleClick = useCallback(() => {
-    console.log("limit", limit);
-    if (limit === 5) setLimit(null);
-    else setLimit(5);
-  }, [limit]);
+  const handleClick = useCallback(() => (setLimit(limit === 5 ? null : 5)), [limit]);
 
   if (filter && contract && contract.creator !== filter) return null;
 
@@ -115,9 +111,10 @@ export default function CognitariumDetails({
         <table className="table">
           <thead>
             <tr>
-              <th>subject</th>
-              <th>predicate</th>
-              <th>value</th>
+              <th>N°</th>
+              <th>Subject</th>
+              <th>Predicate</th>
+              <th>Value</th>
             </tr>
           </thead>
           <tbody>
@@ -130,6 +127,7 @@ export default function CognitariumDetails({
             {isSuccess && !error && data?.results ? (
               data.results.bindings.map((binding, index) => (
                 <tr key={index} className="data-item">
+                  <td>{index + 1}</td>
                   <td className="wb-break-all">
                     {isUrl(binding.subject.value.full) ? (
                       <a

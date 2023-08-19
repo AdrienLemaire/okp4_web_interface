@@ -3,6 +3,7 @@ import { OKP4_ADDRESS, STORAGE_ADDRESS, TRANSACTION_MEMO } from "./constants";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Forms, Modal } from "axentix";
 import {Icon} from "@iconify/react";
+import {encodeStr} from "./utils";
 
 const LawStoneCreate = ({ setRefresh }: { setRefresh: (addr: string) => void }) => {
   const [modal, setModal] = useState<Modal>();
@@ -24,7 +25,7 @@ const LawStoneCreate = ({ setRefresh }: { setRefresh: (addr: string) => void }) 
     const label = (event.currentTarget.elements.namedItem("label") as HTMLInputElement).value;
     const program = (event.currentTarget.elements.namedItem("program") as HTMLTextAreaElement).value;
     const msg = {
-      program: btoa(program),
+      program: encodeStr(program),
       storage_address: STORAGE_ADDRESS,
     };
     const options = { memo: TRANSACTION_MEMO, admin: OKP4_ADDRESS };
