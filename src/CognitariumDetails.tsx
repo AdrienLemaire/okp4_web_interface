@@ -90,7 +90,7 @@ export default function CognitariumDetails({
   if (!contract) return <div>Loading...</div>;
 
   return (
-    <div className="card shadow-1 hoverable-1 rounded-3 white p-4 d-flex fx-right" style={{ maxWidth: "90%" }}>
+    <div className="card shadow-1 hoverable-1 rounded-3 white p-4 d-flex fx-right mr-4">
       {filter !== contract.creator && (
         <div className="d-flex vcenter fx-row-reverse">
           <button className="btn btn-circle ml-2" onClick={() => setFilter(contract.creator)}>

@@ -3,6 +3,7 @@ import { useClients } from "graz";
 import { useState, useEffect, useCallback, useMemo, ChangeEventHandler } from "react";
 import CognitariumDetails from "./CognitariumDetails";
 import RDFTripleInsert from "./RDFTripleInsert";
+import TurtleBuilder from "./TurtleBuilder";
 
 // [address, componentIndex, shouldRebuild]
 type TCurrent = [string, number, boolean];
@@ -60,8 +61,11 @@ export default function Cognitarium({ myAddress }: { myAddress: string }) {
       />
     ));
   }, [result, filter, current]);
+
   return (
     <div>
+      <TurtleBuilder />
+
       <h1 className="text-primary">Cognitarium</h1>
       <div className="d-flex">
         <form className="form-material" style={{ width: "50%" }}>
