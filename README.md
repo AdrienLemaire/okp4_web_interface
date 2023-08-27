@@ -28,6 +28,15 @@ Dagda"](https://nemeton.okp4.network/builders/challenges#challenges)
     <img width="600" src="./public/img/README3.png" />
 </p>
 
+## Open Contribution
+
+In the "Cognitarium" page, you'll find a button "Create Turtle file". The web interface got enhanced  to generate RDF triples from metadata set in form fields.
+
+
+
+https://github.com/AdrienLemaire/okp4_web_interface/assets/260983/769822dc-dba9-4b6e-a327-6ee4e40b0ee3
+
+
 
 
 ## Setup
